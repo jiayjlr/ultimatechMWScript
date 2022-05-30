@@ -176,7 +176,7 @@ function activemq_inquiry_info() {
     init=0
     activemq_pid_member=$(ps -ef | grep java | grep activemq.jar | grep -v grep | awk -F " " '{print $2}' | wc -l)
     ip=$ipinfo
-    if [ $activemq_pid_member == 0 ]; then
+    if [ x$activemq_pid_member == x0 ]; then
         exit 0
     else
         for line in $(ps -ef | grep java | grep activemq.jar | grep -v grep | awk -F " " '{print $2}'); do
@@ -204,7 +204,7 @@ function activemq_inquiry_info() {
             echo "\"activemqHome\"":"\"$activemqHome\""","
 
             cusactivemqbrokerConfig=$(ps -ef | grep $line | grep xbean | wc -l)
-            if [ $cusactivemqbrokerConfig == 0 ]; then
+            if [ x$cusactivemqbrokerConfig == x0 ]; then
                 echo "采用默认的配置文件activemq.xml文件" >>"$filepath""$filename2"
                 echo "当前activemq的broker配置文件内容如下：" >>"$filepath""$filename2"
                 cat $activemqConfig/activemq.xml >>"$filepath""$filename2"
@@ -221,16 +221,18 @@ function activemq_inquiry_info() {
                 echo "" >>"$filepath""$filename2"
 
                 #启用消息后台认证访问控制
-                simpleAuthenticationPlugincount=$(grep 'simpleAuthenticationPlugin' $activemqConfig/activemq.xml | wc -l )
-                jaasAuthenticationPlugincount=$(grep 'jaasAuthenticationPlugincount'  $activemqConfig/activemq.xml | wc -l)
-                if [[ $simpleAuthenticationPlugincount -gt 0  || $jaasAuthenticationPlugincount -gt 0 ]]; then
+                simpleAuthenticationPlugincount=$(grep 'simpleAuthenticationPlugin' $activemqConfig/activemq.xml | wc -l)
+                jaasAuthenticationPlugincount=$(grep 'jaasAuthenticationPlugincount' $activemqConfig/activemq.xml | wc -l)
+                if [[ $simpleAuthenticationPlugincount -gt 0 || $jaasAuthenticationPlugincount -gt 0 ]]; then
                     echo "\"securityplugin\"":"\"启用消息后台认证访问控制\""","
+                    echo "\"securitypluginresult\"":"\"PASS\""","
                 else
                     echo "\"securityplugin\"":"\"未启用消息后台认证访问控制\""","
+                    echo "\"securitypluginresult\"":"\"Failed\""","
                 fi
 
-
             else
+
                 echo "自定义配置文件" >>"$filepath""$filename2"
                 configfile=$(ps -ef | grep $line | awk '{print $NF}' | awk -F '/' '{print $3}') >>"$filepath""$filename2"
                 echo "当前activemq的broker配置文件内容如下：" >>"$filepath""$filename2"
@@ -247,16 +249,17 @@ function activemq_inquiry_info() {
                 echo "\"amqconfiginfo\"":"\"$amqconfiginfo\""","
                 echo "" >>"$filepath""$filename2"
 
-
                 #启用消息后台认证访问控制
-                simpleAuthenticationPlugincount=$(grep 'simpleAuthenticationPlugin' $activemqConfig/$configfile | wc -l )
-                jaasAuthenticationPlugincount=$(grep 'jaasAuthenticationPlugincount'  $activemqConfig/$configfile | wc -l)
-                if [[ $simpleAuthenticationPlugincount -gt 0  || $jaasAuthenticationPlugincount -gt 0 ]]; then
+                simpleAuthenticationPlugincount=$(grep 'simpleAuthenticationPlugin' $activemqConfig/$configfile | wc -l)
+                jaasAuthenticationPlugincount=$(grep 'jaasAuthenticationPlugincount' $activemqConfig/$configfile | wc -l)
+                if [[ $simpleAuthenticationPlugincount -gt 0 || $jaasAuthenticationPlugincount -gt 0 ]]; then
                     echo "\"securityplugin\"":"\"启用消息后台认证访问控制\""","
+                    echo "\"securitypluginresult\"":"\"PASS\""","
                 else
                     echo "\"securityplugin\"":"\"未启用消息后台认证访问控制\""","
+                    echo "\"securitypluginresult\"":"\"Failed\""","
                 fi
-                
+
             fi
 
             cd $activemqData
@@ -271,7 +274,7 @@ function activemq_inquiry_info() {
                 echo "END！！！" >>"$filepath""$filename2"
             done
 
-            if [ $activemqHome == $activemqBase ]; then
+            if [ x$activemqHome == x$activemqBase ]; then
                 amqexec=activemq
 
                 echo "" >>"$filepath""$filename2"
@@ -364,30 +367,25 @@ function activemq_inquiry_info() {
             fileserverbugcount=$(grep '/fileserver' $activemqConfig/jetty.xml | wc -l)
             if [ $fileserverbugcount -eq 0 ]; then
                 echo "\"fileserverbug\"":"\"不存在fileserver漏洞\""","
+                echo "\"fileserverbugResult\"":"\"Pass\""","
             else
                 echo "\"fileserverbug\"":"\"存在fileserver漏洞\""","
+                echo "\"fileserverbugResult\"":"\"Failed\""","
             fi
 
-
             #默认账号密码身份鉴别,activemq存在默认的admin账号，且默认口令为admin。
-            cat $activemqConfig/jetty-realm.properties | grep -v '#' |grep -v '^$' | grep -w 'admin' | while read line
-            do
+            cat $activemqConfig/jetty-realm.properties | grep -v '#' | grep -v '^$' | grep -w 'admin' | while read line; do
                 username=$(echo $line | awk -F "," '{print $1}' | awk -F ":" '{print $1}')
                 password=$(echo $line | awk -F "," '{print $1}' | awk -F ":" '{print $2}' | sed 's/^[ \t]*//g')
-                
-                if [ $username == 'admin' ];then
-                    if [ $password == 'admin' ];then
+
+                if [ x$username == x'admin' ]; then
+                    if [ x$password == x'admin' ]; then
                         echo "\"securityauth\"":"\"activemq存在默认的admin账号，且默认口令为admin\""","
-                    else 
+                    else
                         echo "\"securityauth\"":"\"activemq存在默认的admin账号，且默认口令为$password\""","
-                    fi                    
+                    fi
                 fi
-            done 
-
-
-            
-            
-
+            done
 
             server_jvm_Xms=$(ps -feww | grep $line | grep -v grep | grep -io "\-Xms.*" | awk '{print $1}')
             server_jvm_Xmx=$(ps -feww | grep $line | grep -v grep | grep -io "\-Xmx.*" | awk '{print $1}')
@@ -397,7 +395,14 @@ function activemq_inquiry_info() {
 
             echo "\"server_jvm\"":"\"$server_jvm\""","
             runUser=$(ps -eo ruser,pid | grep $line | awk '{print $1}')
-            echo "\"runUser\"":"\"$runUser\""
+            echo "\"runUser\"":"\"$runUser\""","
+            if [ x$runUser == x'root' ]; then
+                echo "\"runUserResult\"":"\"Failed\""
+
+            else
+                echo "\"runUserResult\"":"\"Pass\""
+
+            fi
 
             init=$(expr $init + 1)
             echo "}"

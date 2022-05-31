@@ -3,7 +3,7 @@
 #monitor:activemq/os
 #update: 根据需求，将整体脚本做了切割，以独立产品做数据采集
 #update: 增加activemq安全基线检查
-#update-date:2022-05-19
+#update-date:2022-05-31
 
 #----------------------------------------OS层数据采集------------------------------------------------
 function collect_sys_info() {
@@ -381,8 +381,10 @@ function activemq_inquiry_info() {
                 if [ x$username == x'admin' ]; then
                     if [ x$password == x'admin' ]; then
                         echo "\"securityauth\"":"\"activemq存在默认的admin账号，且默认口令为admin\""","
+                        echo  "\"securityauthresult\"":"\"Failed\""","
                     else
                         echo "\"securityauth\"":"\"activemq存在默认的admin账号，且默认口令为$password\""","
+                        echo  "\"securityauthresult\"":"\"Pass\""","
                     fi
                 fi
             done

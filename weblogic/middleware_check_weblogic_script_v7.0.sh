@@ -342,8 +342,13 @@ function weblogic_info() {
         adminServer=$(grep 'admin-server-name' $domain_dir/config/config.xml | awk 'BEGIN{FS=">";RS="</"}{print $NF}' | sed '/^\(\s\)*$/d')
 
         echo "\"adminServer\"":"\"$adminServer\""","
-        echo "\"productionmode\"":"\"$productionmode\"",
-        echo "\"runUser\"":"\"$runUser\""
+        echo "\"productionmode\"":"\"$productionmode\""","
+        echo "\"runUser\"":"\"$runUser\""","
+        if [ x$runUser == x'root' ]; then
+                echo "\"runUserResult\"":"\"Failed\""
+            else
+                echo "\"runUserResult\"":"\"Pass\""
+            fi
 
         cp $domain_dir/servers/${server_name}/logs/${server_name}.log /tmp/enmoResult/tmpcheck/${domain_name}_${server_name}_${OPID}
         init=$(expr $init + 1)

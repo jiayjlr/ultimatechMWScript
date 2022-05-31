@@ -172,7 +172,7 @@ def parseCI(kafka_homes):
             minperm = optionsMatch("-XX:MinPermSize=(.+?[mMgG])\S*", kafkajvminfo, "48m")
 
         gcpolicy = optionsMatch(
-            "(-XX:\+UseSerialGC|-XX:\+UseParallelGC|-XX:\+UseConMarkSweepGC|-XX:\+UseG1GC|-Xgcpolicy:\S*)",
+            "(-XX:\+UseSerialGC|-XX:\+UseParallelGC|-XX:\+UseConcMarkSweepGC|-XX:\+UseG1GC|-Xgcpolicy:\S*)",
             kafkajvminfo, "")
 
         # kafka server info

@@ -155,7 +155,7 @@ def parseCI(zkhomes):
         minheap = optionsMatch("-Xms(.+?[mMgG])\S*", zkserverprintcmdinfo, "")
 
         if JAVA_NUM >= 1.8:
-            gcpolicy = optionsMatch("(-XX:\+UseSerialGC|-XX:\+UseParallelGC|-XX:\+UseConMarkSweepGC|-XX:\+UseG1GC|-Xgcpolicy:\S*)",zkserverprintcmdinfo, "")
+            gcpolicy = optionsMatch("(-XX:\+UseSerialGC|-XX:\+UseParallelGC|-XX:\+UseConcMarkSweepGC|-XX:\+UseG1GC|-Xgcpolicy:\S*)",zkserverprintcmdinfo, "")
             zkjvm.append(
                 {
                     "zkhome": zkhome,

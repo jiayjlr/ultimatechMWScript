@@ -23,6 +23,10 @@ currtime2 = time.strftime('%Y%m%d%H%M%S', time.localtime(time.time()))
 JSONFILE = '/tmp/enmotech/kafka_cmdb/' + hostname + '_Kafka_' + currtime2 + '.json'
 
 
+
+
+
+
 def getKafkaHome():
     kafka_list = []
     if OS_TYPE == "Linux":
